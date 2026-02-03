@@ -86,7 +86,9 @@ p
 ggsave(paste("D://R/banana data/Fig.6/致死率/RKN-CELE - 2025-6-9/Death rate-2",".pdf",sep=""),
        device=cairo_pdf,width=80,height=70,dpi = 300,units = "mm")
 
-#Fig. 6c
+
+
+#Fig. 6c. Chemotaxis index
 
 library(ggplot2)
 CI<-read_excel("D://R/banana data/Fig.6/趋化性/RKN-CELE-2025-6-8/RKN-CELE.xlsx")

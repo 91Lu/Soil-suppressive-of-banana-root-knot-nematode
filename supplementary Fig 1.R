@@ -32,7 +32,7 @@ mytheme<- theme_few()+theme(strip.background = element_rect(fill="gray72",colour
                                 legend.background = element_blank(),
                                 axis.line = element_line(color = "black",size=0.4))#移除整体的边???
 
-#Fig s2a  PCoA
+#Fig s1a  PCoA
 library(tidyverse)
 library(vegan)
 library(ggthemes)
@@ -81,7 +81,7 @@ LSD.test(aov_model_RKN_abundance,"Treatment",p.adj = "none",console=T)
 LSD.test(aov_model_RKN_abundance,"Treatment",p.adj = "none",console=T,group = F)
 
 
-#Fig. 2e RKN abundance boxplot
+# RKN abundance boxplot
 p <- ggplot(data=RKN_abundance,mapping=aes(x=Treatment,y=Abundance))+
   geom_boxplot(aes(fill=Treatment),width = 0.65,outlier.alpha = 0.5,outlier.size=0.5,size=0.2)+  
   geom_point(aes(fill=Treatment),shape=21,position = position_jitterdodge(1),size=0.4,stroke = 0.2)+

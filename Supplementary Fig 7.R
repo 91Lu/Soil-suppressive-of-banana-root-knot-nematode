@@ -1,47 +1,47 @@
-第一种算法
-library(agricolae)
-library(dplyr)
-library(car)
+# 加载必要的包
 library(ggplot2)
 
-index<-read.csv("D://R/banana data/功能肥-功能菌/趋化实验/2023-11-20/缺铁培养基.csv")#,row.names=1
-index$group <-factor(index$group,levels=c("CK", "0.01x", "0.1x","0.5x", "1x"))
+# 读取数据
+data <- read.csv("bacillibactin.csv", header = TRUE, strip.white = TRUE)
 
-m="chemotaxis1"
-model = aov(index[[m]] ~ group, data=index)
+# 计算统计量
+mean_val <- mean(data$mean)
+sd_val <- sd(data$mean)
 
-Tukey_HSD = TukeyHSD(model, ordered = TRUE, conf.level = 0.95)
-Tukey_HSD_table = as.data.frame(Tukey_HSD$group)
+# 创建汇总数据框
+summary_data <- data.frame(
+  Group = "Y11.1",
+  Mean = mean_val,
+  SD = sd_val
+)
 
-out = LSD.test(model,"group", p.adj="none")
-stat = out$groups
+# 为原始数据添加分组
+data$Group <- "Y11.1"
 
-index$stat=stat[as.character(index$group),]$groups#
-df1<-index[,c(2,3)]
-data1<-df1%>%group_by(group)%>%summarise_at("chemotaxis1",funs(mean,sd))
-data1
-df2<-as.data.frame(data1)
-df3<-cbind(df2,stat$groups)
-colnames(df3)<-c("group","mean","sd","stat")
+# 绑图
+p <- ggplot() +
+  # 柱状图
+  geom_bar(data = summary_data, aes(x = Group, y = Mean), 
+           stat = "identity", fill = "grey75", color = "black", width = 0.5) +
+  # 误差棒
+  geom_errorbar(data = summary_data, aes(x = Group, ymin = Mean - SD, ymax = Mean + SD),
+                width = 0.15, linewidth = 0.8) +
+  # 离散点
+  geom_jitter(data = data, aes(x = Group, y = mean), 
+              width = 0.1, size = 2, alpha = 0.7) +
+  # Y轴标签
+  labs(y = "Siderophore concentration in supernate\n(μM equivalents of DFOB)",
+       x = "") +
+  # Y轴范围
+  scale_y_continuous(limits = c(0, 60), breaks = seq(0, 60, 20), expand = c(0, 0)) +
+  # 主题设置
+  theme_classic() +
+  theme(
+    axis.text = element_text(size = 12, color = "black"),
+    axis.title.y = element_text(size = 11),
+    axis.line = element_line(linewidth = 0.5),
+    axis.ticks = element_line(linewidth = 0.5)
+  )
 
-p <- ggplot(data=df2,mapping=aes(x=group,y=mean,fill=group))+
-  geom_bar(size = 0.5, position=position_dodge(0.9), stat="identity",width = 0.7)+  
-  geom_jitter(data=df1,mapping=aes(x=group,y=chemotaxis1),color="black",
-              size = 0.71,height = 0.02,width = 0.1)+ 
-  scale_fill_manual(values = c("#C7C7C7FF", "#9EDAE5FF","#9EDAE5FF","#9EDAE5FF","#9EDAE5FF"))+ 
-  scale_color_manual(values = c("#C7C7C7FF", "#9EDAE5FF","#9EDAE5FF","#9EDAE5FF","#9EDAE5FF"))+
-  geom_errorbar(data=df2,aes(x = group,ymin = mean-sd, ymax = mean+sd), width = 0.25,color="black",size=0.3)+
-  labs(y="Chemotaxis index", x="")+
-  scale_y_continuous(expand = c(0, 0),limits = c(-1,0.2))+
-  theme_test(base_line_size = 0.75,base_rect_size =0.75)+
-  theme_classic()+
-  theme(legend.position = "none")+
-  theme(axis.text=element_text(colour='black',size=10),axis.text.x = element_text(vjust = 0.85,hjust = 0.75))+
-  geom_text(data=df3,aes(x = group,y = mean-sd-0.05,label = stat), position = position_dodge(0.75),size=4)
-
-p
-
-ggsave(paste("D://R/banana data/功能肥-功能菌/趋化实验/2023-11-20/缺铁培养基",".pdf",sep=""),
-       device=cairo_pdf,width=60,height=70,dpi = 300,units = "mm")
-
-
+# 显示图形
+print(p)
